@@ -57,23 +57,42 @@ $key = New-CryptographyKey -Algorithm AES -AsPlainText
 #     src/main/resources/config-dev.xml
 #     src/main/resources/config-cat.xml
 #     src/main/resources/config-prod.xml
-$files=@("application-*.properties", "config-*.properties")
+$files=@("application*.properties", "config*.xml")
 
-# Add these patterns to .gitignore
+# Optionally, add these patterns to .gitignore to keep
+# them from being checked in during development, since
+# it's a pain to remove them if they get pushed to a public repo
 $files |% { $_ | Out-File -Append .gitignore }
 
 # Recursively encrypt any matching files and remove the originals
 foreach($file in $files){
     Get-ChildItem -Recurse $file |% {
-        Protect-File $_ -Algorithm AES -KeyAsPlainText $key -RemoveSource
+        $f = Protect-File $_ -Algorithm AES -KeyAsPlainText $key 
+
+        # if the file was previously in git, remove it from git
+        # suppress the error message if the file wasn't in git
+        git rm $_.FullName 2> $null
+
+        git add $f.FullName
     }
 }
 
-# Decrypt all AES encrypted files (leave the AES file)
-foreach($file in $files){
-    Get-ChildItem -Recurse "$file.AES" |% {
-        UnProtect-File $_ -Algorithm AES -KeyAsPlainText $key 
-    }
+# Dump the crypto key so you can plug it into your pipeline
+Write-Output "Crypto Key: $key"
+
+# verify the changes and commit
+git commit
+```
+
+If your sensitive files were previously committed to git, you should consider [Git Cleanup with BFG](#git-cleanup-with-bfg) to remove them from the history.
+
+
+#### Decrypting from a Pipeline
+You should retain a secure copy of the key somewhere like [KeePassXC](https://keepassxc.org/), [Azure Key Vault](https://azure.microsoft.com/en-us/services/key-vault/). The decrypt step is to simply recurse through your directory tree and decrypt "*.AES" files, passing the `$key` from a Secure Variable or file.
+```PowerShell
+# Decrypt all AES encrypted files
+Get-ChildItem -Recurse "*.AES" |% {
+    UnProtect-File $_ -Algorithm AES -KeyAsPlainText $key -RemoveSource
 }
 ```
 
