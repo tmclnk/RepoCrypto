@@ -125,13 +125,13 @@ The included [unprotect-file.sh](unprotect-file.sh) will decrypt `AES` encrypted
 
 ```bash
 # read the encrypted .AES file and write application.properties to disk
-$key=rvxDHtr8oBr06udA0yu5z5K9AmpEqxBa+J3spJ/zLBM=
+key=rvxDHtr8oBr06udA0yu5z5K9AmpEqxBa+J3spJ/zLBM=
 ./unprotect-file.sh -keyasplaintext $key application.properties.AES
 ```
 
 ```bash
 # recursively find all the '.AES' files and decrypt them
-$key=rvxDHtr8oBr06udA0yu5z5K9AmpEqxBa+J3spJ/zLBM=
+key=rvxDHtr8oBr06udA0yu5z5K9AmpEqxBa+J3spJ/zLBM=
 find ~/tmp/my-project -name '*.AES' -exec ./unprotect-file.sh -keyasplaintext $key {} \;
 ```
 
