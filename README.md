@@ -27,15 +27,21 @@ You need to:
 4. Decrypt the files in the CI/CD pipelines
 
 ## Installation
-Clone the module into your `$env:PSModulePath`. 
+Clone the module into your `$env:PSModulePath`.  
 
-##### Windows PowerShell
+##### Windows 7 Enterprise PowerShell 
 ```PowerShell
-git clone https://github.com/tmcoma/RepoCrypto.git "$home\Documents\WindowsPowerShell\Modules"
+git clone https://github.com/tmcoma/RepoCrypto.git "$env:HOMESHARE\My Documents\WindowsPowerShell\Modules\RepoCrypto"
 ```
+
+##### Windows PowerShell (Home Users)
+```PowerShell
+git clone https://github.com/tmcoma/RepoCrypto.git "$HOME\Documents\WindowsPowerShell\Modules\RepoCrypto"
+```
+
 ##### Linux PowerShell
 ```PowerShell
-git clone https://github.com/tmcoma/RepoCrypto.git "$home/.local/share/powershell/Modules"
+git clone https://github.com/tmcoma/RepoCrypto.git "$home/.local/share/powershell/Modules/RepoCrypto"
 ```
 
 ## Basic Usage
@@ -153,6 +159,9 @@ find ~/tmp/my-project -name '*.AES' -exec ./unprotect-file.sh -keyasplaintext $k
 - There's no tamper proofing here (no HMAC)
 - It's unsalted
 - Keys are exposed as parameters to the scripts/functions
+
+# Troubleshooting
+- If `Import-Module RepoCrypto` fails, make sure that the repo is cloned into one of the directories in your `$env:PSModulePath`.  You can print these out with `$env:PSModulePath -split ';'`.
 
 # Related Links
 - [bfg repo cleaner](https://rtyley.github.io/bfg-repo-cleaner/) (github)
