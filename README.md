@@ -38,6 +38,23 @@ git clone https://github.com/tmcoma/RepoCrypto.git "$home\Documents\WindowsPower
 git clone https://github.com/tmcoma/RepoCrypto.git "$home/.local/share/powershell/Modules"
 ```
 
+## Basic Usage
+```PowerShell
+Import-Module RepoCrypto
+
+# generate a key
+$key = New-CryptographyKey -Algorithm AES -AsPlainText
+
+# save this key somewhere safe
+Write-Output "Key is $key"
+
+# encrypt everything as AES
+gci -re  app*.properties, config*.xml |% { Protect-File -KeyAsPlainText $key $_ }
+
+# decrypt all AES files
+gci -re *.AES |% { Unprotect-File -KeyAsPlainText $key $_ }
+```
+
 ## Using in CI/CD Pipelines
 #### Cleaning up existing repositories
 If you already have plaintext secrets in a public git repository, you should assume that the resources are already compromised and you need to take steps to create new passwords/keys/users.
@@ -47,7 +64,7 @@ See [Cleanup with BFG](#cleanup-with-bfg) for cleaning up a git repository's his
 #### Encrypting Properties in a Git Repository
 ```PowerShell
 # Import the Module
-Import-Module posh-repocrypto
+Import-Module RepoCrypto
 $key = New-CryptographyKey -Algorithm AES -AsPlainText
 
 # File patterns.  For example, if our properties files were like this:
@@ -65,16 +82,13 @@ $files=@("application*.properties", "config*.xml")
 $files |% { $_ | Out-File -Append .gitignore }
 
 # Recursively encrypt any matching files and remove the originals
-foreach($file in $files){
-    Get-ChildItem -Recurse $file |% {
-        $f = Protect-File $_ -Algorithm AES -KeyAsPlainText $key 
+Get-ChildItem -Recurse $files |% {
+    $f = Protect-File $_ -Algorithm AES -KeyAsPlainText $key 
 
-        # if the file was previously in git, remove it from git
-        # suppress the error message if the file wasn't in git
-        git rm $_.FullName 2> $null
-
-        git add $f.FullName
-    }
+    # if the file was previously in git, remove it from git
+    # suppress the error message if the file wasn't in git
+    git rm $_.FullName 2> $null
+    git add $f.FullName
 }
 
 # Dump the crypto key so you can plug it into your pipeline
@@ -91,8 +105,8 @@ If your sensitive files were previously committed to git, you should consider [G
 You should retain a secure copy of the key somewhere like [KeePassXC](https://keepassxc.org/), [Azure Key Vault](https://azure.microsoft.com/en-us/services/key-vault/). The decrypt step is to simply recurse through your directory tree and decrypt "*.AES" files, passing the `$key` from a Secure Variable or file.
 ```PowerShell
 # Decrypt all AES encrypted files
-Get-ChildItem -Recurse "*.AES" |% {
-    UnProtect-File $_ -Algorithm AES -KeyAsPlainText $key -RemoveSource
+Get-ChildItem -Recurse *.AES |% {
+    UnProtect-File $_ -KeyAsPlainText $key -RemoveSource
 }
 ```
 
