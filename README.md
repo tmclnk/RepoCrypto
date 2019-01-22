@@ -31,11 +31,11 @@ Clone the module into your `$env:PSModulePath`.
 
 ##### Windows PowerShell
 ```PowerShell
-git clone https://<REPO> "$home\Documents\WindowsPowerShell\Modules"
+git clone https://github.com/tmcoma/RepoCrypto.git "$home\Documents\WindowsPowerShell\Modules"
 ```
 ##### Linux PowerShell
 ```PowerShell
-git clone https://<REPO> "$home/.local/share/powershell/Modules"
+git clone https://github.com/tmcoma/RepoCrypto.git "$home/.local/share/powershell/Modules"
 ```
 
 ## Using in CI/CD Pipelines
