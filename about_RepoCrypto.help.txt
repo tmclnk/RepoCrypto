@@ -4,21 +4,17 @@ TOPIC
 SHORT DESCRIPTION
     Simple symmetric encryption for configuration files in public git repositories. 
 
-EXAMPLES
-    $files=@("application-*.properties", "config-*.properties")
+EXAMPLE
+    $key = New-CryptographicKey -Algorithm AES -AsPlainText
 
     # Recursively encrypt any matching files and remove the originals
-    foreach($file in $files){
-        Get-ChildItem -Recurse $file |% {
-            Protect-File $_ -Algorithm AES -KeyAsPlainText $key -RemoveSource
-        }
+    Get-ChildItem -Recurse application*.properties, config*.xml |% {
+        Protect-File $_ -Algorithm AES -KeyAsPlainText $key -RemoveSource
     }
 
     # Decrypt all AES encrypted files (leave the AES file)
-    foreach($file in $files){
-        Get-ChildItem -Recurse "$file.AES" |% {
+    Get-ChildItem -Recurse "*.AES" |% {
             UnProtect-File $_ -Algorithm AES -KeyAsPlainText $key 
-        }
     }
 RELATED LINKS
     https://rtyley.github.io/bfg-repo-cleaner/

@@ -27,11 +27,11 @@ You need to:
 4. Decrypt the files in the CI/CD pipelines
 
 ## Installation
-Clone the module into your `$env:PSModulePath`.  
+Clone the module into one of the directories on your `$env:PSModulePath`.
 
-##### Windows 7 Enterprise PowerShell 
+##### Windows 7 Enterprise PowerShell
 ```PowerShell
-git clone https://github.com/tmcoma/RepoCrypto.git "$env:HOMESHARE\My Documents\WindowsPowerShell\Modules\RepoCrypto"
+Remove-Item -re -fo $env:TEMP\RepoCrypto; git clone https://github.com/tmcoma/RepoCrypto.git $env:TEMP\RepoCrypto; mkdir "$env:HOMESHARE\My Documents\WindowsPowerShell\Modules\RepoCrypto" -ErrorAction Ignore; Copy-Item -fo "$env:TEMP\RepoCrypto\*" "$env:HOMESHARE\My Documents\WindowsPowerShell\Modules\RepoCrypto"
 ```
 
 ##### Windows PowerShell (Home Users)
