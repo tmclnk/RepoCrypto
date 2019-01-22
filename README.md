@@ -120,7 +120,28 @@ git reflog expire --expire=now --all
 git gc --prune=now --aggressive
 ```
 
+# Bash
+The included [unprotect-file.sh](unprotect-file.sh) will decrypt `AES` encrypted files produced by the Powershell `Protect-File` function.  This isn't ideal, as the key is exposed as an argument to the script, but it's a start.
+
+```bash
+# read the encrypted .AES file and write application.properties to disk
+$key=rvxDHtr8oBr06udA0yu5z5K9AmpEqxBa+J3spJ/zLBM=
+./unprotect-file.sh -keyasplaintext $key application.properties.AES
+```
+
+```bash
+# recursively find all the '.AES' files and decrypt them
+$key=rvxDHtr8oBr06udA0yu5z5K9AmpEqxBa+J3spJ/zLBM=
+find ~/tmp/my-project -name '*.AES' -exec ./unprotect-file.sh -keyasplaintext $key {} \;
+```
+
+# Gotchas
+- There's no tamper proofing here (no HMAC)
+- It's unsalted
+- Keys are exposed as parameters to the scripts/functions
+
 # Related Links
 - [bfg repo cleaner](https://rtyley.github.io/bfg-repo-cleaner/) (github)
 - [removing sensitive data from a repo](https://help.github.com/articles/removing-sensitive-data-from-a-repository/) (github)
 - [FileCryptography Powershell Module](https://gallery.technet.microsoft.com/scriptcenter/EncryptDecrypt-files-use-65e7ae5d)  (microsoft technet)
+- [Initialization Vectors (IV)](http://www.cryptofails.com/post/70059609995/crypto-noobs-1-initialization-vectors) (cryptofails)
