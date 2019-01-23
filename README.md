@@ -27,27 +27,35 @@ You need to:
 4. Decrypt the files in the CI/CD pipelines
 
 ## Installation
-Clone the module into one of the directories on your `$env:PSModulePath`.
+Clone the module into one of the directories on your `$env:PSModulePath`, then restart PowerShell.
+
+> If you don't want to install to your Module Path, just install to a temporary location and call `Import-Module` on the directory.
 
 ##### Windows 7 Enterprise PowerShell
+If your $HOME and your $PSModulePath don't intersect, and you can't write to $env:HOMESHARE directly, you can clone the project and then copy it into the directory.
 ```PowerShell
-Remove-Item -re -fo $env:TEMP\RepoCrypto; git clone https://github.com/tmcoma/RepoCrypto.git $env:TEMP\RepoCrypto; mkdir "$env:HOMESHARE\My Documents\WindowsPowerShell\Modules\RepoCrypto" -ErrorAction Ignore; Copy-Item -fo "$env:TEMP\RepoCrypto\*" "$env:HOMESHARE\My Documents\WindowsPowerShell\Modules\RepoCrypto"
+Remove-Item -re -fo $env:TEMP\RepoCrypto; git clone https://github.com/tmcoma/RepoCrypto.git $env:TEMP\RepoCrypto; mkdir "$env:HOMESHARE\My Documents\WindowsPowerShell\Modules\RepoCrypto" -ErrorAction Ignore; Copy-Item -fo "$env:TEMP\RepoCrypto\*" "$env:HOMESHARE\My Documents\WindowsPowerShell\Modules\RepoCrypto"; Import-Module -Force RepoCrypto
 ```
 
 ##### Windows PowerShell (Home Users)
 ```PowerShell
-git clone https://github.com/tmcoma/RepoCrypto.git "$HOME\Documents\WindowsPowerShell\Modules\RepoCrypto"
+git clone https://github.com/tmcoma/RepoCrypto.git "$HOME\Documents\WindowsPowerShell\Modules\RepoCrypto"; Import-Module RepoCrypto
 ```
 
 ##### Linux PowerShell
 ```PowerShell
-git clone https://github.com/tmcoma/RepoCrypto.git "$home/.local/share/powershell/Modules/RepoCrypto"
+git clone https://github.com/tmcoma/RepoCrypto.git "$home/.local/share/powershell/Modules/RepoCrypto"; Import-Module RepoCrypto
+```
+
+
+##### Verify Installation
+```PowerShell
+Get-Module RepoCrypto
+Get-Help RepoCrypto
 ```
 
 ## Basic Usage
 ```PowerShell
-Import-Module RepoCrypto
-
 # generate a key
 $key = New-CryptographyKey -Algorithm AES -AsPlainText
 
@@ -70,7 +78,6 @@ See [Cleanup with BFG](#cleanup-with-bfg) for cleaning up a git repository's his
 #### Encrypting Properties in a Git Repository
 ```PowerShell
 # Import the Module
-Import-Module RepoCrypto
 $key = New-CryptographyKey -Algorithm AES -AsPlainText
 
 # File patterns.  For example, if our properties files were like this:
